@@ -52,3 +52,31 @@ The configurations are stored inside in JSON located at `boiler.json`. Here’s 
   }
 }
 ```
+
+## Complete example
+
+```
+# Write config
+echo '{
+  "projects": [
+    {
+      "name": "rest",
+      "domain": "rest.sandbox.thefirstspine.fr",
+      "repository": "https://github.com/thefirstspine/rest.git",
+      "env": [
+        "PORT=8080",
+        "ARENA_URL=https://arena.thefirstspine.fr",
+        "WEBSITE_URL=https://www.thefirstspine.fr"
+      ]
+    }
+  ]
+}' > boiler.json
+# Download from github
+wget https://github.com/thefirstspine/boiler2/releases/download/v-0.1.0/boiler2_v-0.1.0_linux_amd64.tar.gz boiler2_v-0.1.0_linux_amd64.tar.gz
+# Untar release
+tar vxf boiler2_v-0.1.0_linux_amd64.tar.gz
+# Make it executable
+chmod +x boiler2
+# Execute file
+./boiler2 deploy rest
+```

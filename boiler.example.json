@@ -1,0 +1,11 @@
+{
+  "projects": {
+    "{project name}": {
+      "domain": "{domain}",
+      "repository": "{repository - HTTPS or SSH}",
+      "env": [
+        "{environment key}={value}"
+      ]
+    }
+  }
+}

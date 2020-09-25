@@ -42,6 +42,11 @@ add-apt-repository ppa:certbot/certbot -y
 apt-get update
 apt-get install certbot python-certbot-nginx -y
 
+# Install musl package
+
+apt-get -y install musl-dev
+ln -s /usr/lib/x86_64-linux-musl/libc.so /lib/libc.musl-x86_64.so.1
+
 # Finish
 
 echo "Start hacking and deploy projects with Boiler!"
