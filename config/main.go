@@ -16,16 +16,25 @@ limitations under the License.
 package config
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 )
 
+type Common struct {
+
+	// All the environements variables passed to the
+	// container. If you pass secrets in this configuration, you'd
+	// better crypt them & store them in a secure place.
+	Env []string `json:"env"`
+}
+
 // Main Projects JSON type. Will contain all the projects.
-type Projects struct {
+type Config struct {
 	// The projects entry
 	Projects []Project `json:"projects"`
+	Common   Common    `json:"common"`
 }
 
 // Represents a project in Boiler. A project is a Docker container
@@ -64,13 +73,13 @@ func GetConfig(appname string) (project Project, ok bool) {
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	// Unmarshal the byteArray to the projects variable
-	var projects Projects
-	json.Unmarshal(byteValue, &projects)
+	var config Config
+	json.Unmarshal(byteValue, &config)
 
 	// Iterate on the projects to find the right project
-	for i := 0; i < len(projects.Projects); i++ {
-		if projects.Projects[i].Name == appname {
-			return projects.Projects[i], true
+	for i := 0; i < len(config.Projects); i++ {
+		if config.Projects[i].Name == appname {
+			return config.Projects[i], true
 		}
 	}
 
@@ -78,4 +87,27 @@ func GetConfig(appname string) (project Project, ok bool) {
 	// value with a wrong status.
 	var defVal Project
 	return defVal, false
+}
+
+func GetCommon() (common Common, ok bool) {
+
+	// Open the jsonFile
+	jsonFile, err := os.Open("./boiler.json")
+	if err != nil {
+		fmt.Println(err)
+		var defVal Common
+		return defVal, false
+	}
+
+	// Defer the closing of the file
+	defer jsonFile.Close()
+
+	// Read the file
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	// Unmarshal the byteArray to the projects variable
+	var config Config
+	json.Unmarshal(byteValue, &config)
+
+	return config.Common, false
 }

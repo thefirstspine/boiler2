@@ -16,10 +16,11 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"errors"
-	"github.com/spf13/cobra"
+	"fmt"
+
 	"github.com/fatih/color"
+	"github.com/spf13/cobra"
 	"github.com/thefirstspine/boiler2/commands"
 	"github.com/thefirstspine/boiler2/config"
 	"github.com/thefirstspine/boiler2/nginx"
@@ -51,13 +52,13 @@ func init() {
 var deployCmd = &cobra.Command{
 	Use:   "deploy {app}",
 	Short: "Deploy an app.",
-	Long: `Deploy an app.`,
+	Long:  `Deploy an app.`,
 	Args: func(cmd *cobra.Command, args []string) error {
-    if len(args) < 1 {
-      return errors.New("requires an `app` argument")
+		if len(args) < 1 {
+			return errors.New("requires an `app` argument")
 		}
 		return nil
-  },
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get project
 		project, status := config.GetConfig(args[0])
@@ -65,6 +66,9 @@ var deployCmd = &cobra.Command{
 			color.Red("Cannot find app `%s`", args[0])
 			panic("Something goes wrong in the deployment. Old container still up & running.")
 		}
+
+		// Get common config
+		common, status := config.GetCommon()
 
 		// Check requirements
 		color.Cyan("\nChecking requirements...")
@@ -102,10 +106,11 @@ var deployCmd = &cobra.Command{
 		// Run the new container
 		port := ports.GetFirstFreePort(1024, 49151, []int{1024, 1433, 1521, 3306, 5432})
 		color.Cyan(fmt.Sprintf("\nRun image %s to container %s:%d...", imageName, containerName, port))
+		fmt.Print(common.Env)
 		if !commands.DockerRun(
 			imageName,
 			containerName,
-			project.Env,
+			append(project.Env, common.Env...),
 			fmt.Sprintf("%d:%d", 8080, port),
 		) {
 			color.Red("Failed to build the image.")

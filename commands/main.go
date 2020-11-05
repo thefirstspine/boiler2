@@ -33,11 +33,11 @@ func TestCommand(cmd string) bool {
 // Launch a TestCommand to clone the repository inside a `boilerapp_{project}`
 // directory.
 func GitClone(repository string, destination string) bool {
-	return TestCommand(fmt.Sprintf("git clone %s %s", repository, destination));
+	return TestCommand(fmt.Sprintf("git clone %s %s", repository, destination))
 }
 
 func DockerBuild(imageName string, directory string) bool {
-	return TestCommand(fmt.Sprintf("docker build -t %s %s", imageName, directory));
+	return TestCommand(fmt.Sprintf("docker build -t %s %s", imageName, directory))
 }
 
 func DockerStop(containerName string) bool {

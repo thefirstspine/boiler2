@@ -40,7 +40,7 @@ apt-get -y install nginx
 add-apt-repository universe
 add-apt-repository ppa:certbot/certbot -y
 apt-get update
-apt-get install certbot python-certbot-nginx -y
+apt-get install certbot -y
 
 # Install musl package
 

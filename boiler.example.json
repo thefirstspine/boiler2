@@ -1,11 +1,17 @@
 {
-  "projects": {
-    "{project name}": {
+  "common": {
+    "env": [
+      "{environment key}={value}"
+    ]
+  },
+  "projects": [
+    {
+      "name": "{project name}",
       "domain": "{domain}",
       "repository": "{repository - HTTPS or SSH}",
       "env": [
         "{environment key}={value}"
       ]
     }
-  }
+  ]
 }
