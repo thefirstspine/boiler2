@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"os/exec"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/thefirstspine/boiler2/config"
 	"gopkg.in/go-playground/webhooks.v5/github"
@@ -49,16 +50,22 @@ var serveCmd = &cobra.Command{
 			case github.ReleasePayload:
 				// Getting release struct
 				release := payload.(github.ReleasePayload)
+				color.Green("Release received:")
+				fmt.Printf("%+v", release)
 				// Getting project struct
 				project, projectStatus := config.GetConfig(release.Repository.Name)
 				if !projectStatus {
+					color.Red("Cannot find app `%s`", release.Repository.Name)
 					return
 				}
+				color.Green("Deploy app `%s`", release.Repository.Name)
 				// Deploy
-				exec.Command(
+				output, err := exec.Command(
 					"/bin/bash",
 					"-c",
 					fmt.Sprintf("(nohup ./boiler2 deploy %s --tag_or_branch=%s 2> /dev/null &)", project.Name, release.Release.TagName)).Output()
+				fmt.Println("  => error", err)
+				fmt.Println("  => output", output)
 			}
 		})
 		http.ListenAndServe(":3000", nil)
