@@ -18,6 +18,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -25,6 +26,14 @@ import (
 	"github.com/thefirstspine/boiler2/config"
 	"github.com/thefirstspine/boiler2/nginx"
 	"github.com/thefirstspine/boiler2/ports"
+)
+
+const (
+	portRangeMin      = 1024
+	portRangeMax      = 49151
+	directoryMask     = "boilerapp_%s_%s"
+	imageNameMask     = "boilerimage_%s"
+	containerNameMask = "boilercontainer_%s"
 )
 
 func init() {
@@ -36,16 +45,6 @@ func init() {
 	c.Println("██████╔╝    ╚██████╔╝    ██║    ███████╗    ███████╗    ██║  ██║")
 	c.Println("╚═════╝      ╚═════╝     ╚═╝    ╚══════╝    ╚══════╝    ╚═╝  ╚═╝")
 	rootCmd.AddCommand(deployCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// deployCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// deployCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	deployCmd.Flags().StringP("tag_or_branch", "t", "master", "The tag or the branch to deploy.")
 	deployCmd.Flags().BoolP("skip_build", "b", false, "Skip the docker build.")
@@ -85,7 +84,7 @@ var deployCmd = &cobra.Command{
 		color.Green("Done")
 
 		// Get the app from the git repository
-		directory := fmt.Sprintf("boilerapp_%s", project.Name)
+		directory := fmt.Sprintf(directoryMask, project.Name, string(time.Now().UnixNano()))
 		tagOfBranch, _ := cmd.Flags().GetString("tag_or_branch")
 		color.Cyan(fmt.Sprintf("\nGetting project from repo %s...", project.Repository))
 		if !commands.GitClone(project.Repository, directory, tagOfBranch) {
@@ -96,7 +95,7 @@ var deployCmd = &cobra.Command{
 		color.Green("Done")
 
 		// Build image
-		imageName := fmt.Sprintf("boilerimage_%s", project.Name)
+		imageName := fmt.Sprintf(imageNameMask, project.Name)
 		skipBuild, _ := cmd.Flags().GetBool("skip_build")
 		if !skipBuild {
 			color.Cyan(fmt.Sprintf("\nBuild image %s from directory %s...", imageName, directory))
@@ -109,12 +108,12 @@ var deployCmd = &cobra.Command{
 		}
 
 		// Stop old container
-		containerName := fmt.Sprintf("boilercontainer_%s", project.Name)
+		containerName := fmt.Sprintf(containerNameMask, project.Name)
 		commands.DockerStop(containerName)
 		commands.DockerRm(containerName)
 
 		// Run the new container
-		port := ports.GetFirstFreePort(1024, 49151, []int{1024, 1433, 1521, 3306, 5432})
+		port := ports.GetFirstFreePort(portRangeMin, portRangeMax, []int{1024, 1433, 1521, 3306, 5432})
 		color.Cyan(fmt.Sprintf("\nRun image %s to container %s:%d...", imageName, containerName, port))
 		fmt.Print(common.Env)
 		if !commands.DockerRun(
