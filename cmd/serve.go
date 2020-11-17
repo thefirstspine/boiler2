@@ -52,6 +52,8 @@ var serveCmd = &cobra.Command{
 				release := payload.(github.ReleasePayload)
 				color.Green("Release received:")
 				fmt.Println("")
+				fmt.Printf("%+v", r)
+				fmt.Println("")
 				fmt.Printf("%+v", release)
 				fmt.Println("")
 				fmt.Printf("%+v", release.Repository)
