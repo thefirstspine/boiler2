@@ -22,39 +22,45 @@ import (
 )
 
 // Test a command - on error, will return `false`.
-func TestCommand(cmd string) bool {
-	fmt.Println("=> test command", cmd)
+func TestCommand(cmd string, log bool) bool {
+	if log {
+		fmt.Println("=> test command", cmd)
+	}
 	output, err := exec.Command("/bin/bash", "-c", cmd).Output()
-	fmt.Println("  => error", err)
-	fmt.Println("  => output", output)
+	if log {
+		fmt.Println("  => error", err)
+	}
+	if log {
+		fmt.Println("  => output", output)
+	}
 	return err == nil
 }
 
 // Launch a TestCommand to clone the repository inside a `boilerapp_{project}`
 // directory.
 func GitClone(repository string, destination string, tagOfBranch string) bool {
-	return TestCommand(fmt.Sprintf("git clone -b %s %s %s", tagOfBranch, repository, destination))
+	return TestCommand(fmt.Sprintf("git clone -b %s %s %s", tagOfBranch, repository, destination), true)
 }
 
 func DockerBuild(imageName string, directory string) bool {
-	return TestCommand(fmt.Sprintf("docker build -t %s %s", imageName, directory))
+	return TestCommand(fmt.Sprintf("docker build -t %s %s", imageName, directory), true)
 }
 
 func DockerStop(containerName string) bool {
-	return TestCommand(fmt.Sprintf("docker stop %s", containerName))
+	return TestCommand(fmt.Sprintf("docker stop %s", containerName), true)
 }
 
 func DockerRm(containerName string) bool {
-	return TestCommand(fmt.Sprintf("docker rm %s", containerName))
+	return TestCommand(fmt.Sprintf("docker rm %s", containerName), true)
 }
 
 func DockerRun(imageName string, containerName string, envVars []string, portForwarding string) bool {
 	envVarsStr := strings.Join(envVars[:], "\" -e \"")
 	return TestCommand(
 		fmt.Sprintf("docker run --name %s -e \"%s\" -p %s -d %s", containerName, envVarsStr, portForwarding, imageName),
-	)
+		false)
 }
 
 func Certbot(domain string) bool {
-	return TestCommand(fmt.Sprintf("certbot --nginx --email teddy@coretizone.com -d %s --agree-tos --non-interactive", domain))
+	return TestCommand(fmt.Sprintf("certbot --nginx --email teddy@coretizone.com -d %s --agree-tos --non-interactive", domain), true)
 }

@@ -51,15 +51,7 @@ var serveCmd = &cobra.Command{
 				// Getting release struct
 				release := payload.(github.ReleasePayload)
 				color.Green("Release received:")
-				fmt.Println("")
-				fmt.Printf("%+v", r.Body)
-				fmt.Println("")
 				fmt.Printf("%+v", release)
-				fmt.Println("")
-				fmt.Printf("%+v", release.Repository)
-				fmt.Println("")
-				fmt.Printf("%+v", release.Repository.Name)
-				fmt.Println("")
 				// Getting project struct
 				project, projectStatus := config.GetConfig(release.Repository.Name)
 				if !projectStatus {

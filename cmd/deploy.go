@@ -154,7 +154,7 @@ var deployCmd = &cobra.Command{
 		// Clean
 		skipClean, _ := cmd.Flags().GetBool("skip_clean")
 		if !skipClean {
-			if !commands.TestCommand(fmt.Sprintf("rm -rf %s", directory)) {
+			if !commands.TestCommand(fmt.Sprintf("rm -rf %s", directory), true) {
 				color.Yellow("Failed to remove the project directory.")
 				color.Yellow("You should rm it by yourself.")
 			} else {
@@ -173,25 +173,25 @@ var deployCmd = &cobra.Command{
 // script that will install everything for you.
 func CheckRequirements() bool {
 	// Git is required
-	if !commands.TestCommand("git --version") {
+	if !commands.TestCommand("git --version", true) {
 		color.Red("Git not installed")
 		return false
 	}
 
 	// Docker is required
-	if !commands.TestCommand("docker --version") {
+	if !commands.TestCommand("docker --version", true) {
 		color.Red("Docker not installed")
 		return false
 	}
 
 	// nginx is required
-	if !commands.TestCommand("nginx -v") {
+	if !commands.TestCommand("nginx -v", true) {
 		color.Red("nginx not installed")
 		return false
 	}
 
 	// certbot is required
-	if !commands.TestCommand("certbot --version") {
+	if !commands.TestCommand("certbot --version", true) {
 		color.Red("certbot not installed")
 		return false
 	}
