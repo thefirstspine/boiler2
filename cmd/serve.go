@@ -58,7 +58,7 @@ var serveCmd = &cobra.Command{
 				exec.Command(
 					"/bin/bash",
 					"-c",
-					fmt.Sprintf("./boiler2 deploy %s --tag_or_branch=%s", project.Name, release.Release.TagName)).Output()
+					fmt.Sprintf("(nohup ./boiler2 deploy %s --tag_or_branch=%s 2> /dev/null &)", project.Name, release.Release.TagName)).Output()
 			}
 		})
 		http.ListenAndServe(":3000", nil)
