@@ -46,6 +46,11 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// deployCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	deployCmd.Flags().StringP("tag_or_branch", "t", "master", "The tag or the branch to deploy.")
+	deployCmd.Flags().BoolP("skip_build", "b", false, "Skip the docker build.")
+	deployCmd.Flags().BoolP("skip_sign", "s", false, "Skip the certbot call.")
+	deployCmd.Flags().BoolP("skip_clean", "c", false, "Skip the clean at the end of the deployment.")
 }
 
 // deployCmd represents the deploy command
@@ -81,8 +86,9 @@ var deployCmd = &cobra.Command{
 
 		// Get the app from the git repository
 		directory := fmt.Sprintf("boilerapp_%s", project.Name)
+		tagOfBranch, _ := cmd.Flags().GetString("tag_or_branch")
 		color.Cyan(fmt.Sprintf("\nGetting project from repo %s...", project.Repository))
-		if !commands.GitClone(project.Repository, directory) {
+		if !commands.GitClone(project.Repository, directory, tagOfBranch) {
 			color.Red("Failed to clone the repository.")
 			color.Red("Please check you have to rights to perform this action.")
 			panic("Something goes wrong in the deployment. Old container still up & running.")
@@ -91,13 +97,16 @@ var deployCmd = &cobra.Command{
 
 		// Build image
 		imageName := fmt.Sprintf("boilerimage_%s", project.Name)
-		color.Cyan(fmt.Sprintf("\nBuild image %s from directory %s...", imageName, directory))
-		if !commands.DockerBuild(imageName, directory) {
-			color.Red("Failed to build the image.")
-			color.Red("Please ensure that the Docker daemon is running on this machine.")
-			panic("Something goes wrong in the deployment. Old container still up & running.")
+		skipBuild, _ := cmd.Flags().GetBool("skip_build")
+		if !skipBuild {
+			color.Cyan(fmt.Sprintf("\nBuild image %s from directory %s...", imageName, directory))
+			if !commands.DockerBuild(imageName, directory) {
+				color.Red("Failed to build the image.")
+				color.Red("Please ensure that the Docker daemon is running on this machine.")
+				panic("Something goes wrong in the deployment. Old container still up & running.")
+			}
+			color.Green("Done")
 		}
-		color.Green("Done")
 
 		// Stop old container
 		containerName := fmt.Sprintf("boilercontainer_%s", project.Name)
@@ -131,20 +140,26 @@ var deployCmd = &cobra.Command{
 		color.Green("Done")
 
 		// Call certbot
-		color.Cyan(fmt.Sprintf("\nGenerate certificate for domain %s...", domain))
-		if !commands.Certbot(domain) {
-			color.Red("Failed to generate a certificate.")
-			color.Red("This error is usually a problem with the Letsencrypt challenge. More infos here: https://certbot.eff.org/docs/challenges.html")
-			panic("Something goes wrong in the deployment. Old container might be not up & running.")
+		skipSign, _ := cmd.Flags().GetBool("skip_sign")
+		if !skipSign {
+			color.Cyan(fmt.Sprintf("\nGenerate certificate for domain %s...", domain))
+			if !commands.Certbot(domain) {
+				color.Red("Failed to generate a certificate.")
+				color.Red("This error is usually a problem with the Letsencrypt challenge. More infos here: https://certbot.eff.org/docs/challenges.html")
+				panic("Something goes wrong in the deployment. Old container might be not up & running.")
+			}
+			color.Green("Done")
 		}
-		color.Green("Done")
 
 		// Clean
-		if !commands.TestCommand(fmt.Sprintf("rm -rf %s", directory)) {
-			color.Yellow("Failed to remove the project directory.")
-			color.Yellow("You should rm it by yourself.")
-		} else {
-			color.Green("Done")
+		skipClean, _ := cmd.Flags().GetBool("skip_clean")
+		if !skipClean {
+			if !commands.TestCommand(fmt.Sprintf("rm -rf %s", directory)) {
+				color.Yellow("Failed to remove the project directory.")
+				color.Yellow("You should rm it by yourself.")
+			} else {
+				color.Green("Done")
+			}
 		}
 
 		// All done!

@@ -32,8 +32,8 @@ func TestCommand(cmd string) bool {
 
 // Launch a TestCommand to clone the repository inside a `boilerapp_{project}`
 // directory.
-func GitClone(repository string, destination string) bool {
-	return TestCommand(fmt.Sprintf("git clone %s %s", repository, destination))
+func GitClone(repository string, destination string, tagOfBranch string) bool {
+	return TestCommand(fmt.Sprintf("git clone -b %s %s %s", tagOfBranch, repository, destination))
 }
 
 func DockerBuild(imageName string, directory string) bool {
