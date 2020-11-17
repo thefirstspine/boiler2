@@ -39,7 +39,7 @@ var serveCmd = &cobra.Command{
 		hook, _ := github.New(github.Options.Secret("MyGitHubSuperSecretSecrect...?"))
 
 		http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-			payload, err := hook.Parse(r, github.ReleaseEvent, github.PullRequestEvent)
+			payload, err := hook.Parse(r, github.ReleaseEvent)
 			if err != nil {
 				if err == github.ErrEventNotFound {
 					// ok event wasn;t one of the ones asked to be parsed
@@ -51,7 +51,13 @@ var serveCmd = &cobra.Command{
 				// Getting release struct
 				release := payload.(github.ReleasePayload)
 				color.Green("Release received:")
+				fmt.Println("")
 				fmt.Printf("%+v", release)
+				fmt.Println("")
+				fmt.Printf("%+v", release.Repository)
+				fmt.Println("")
+				fmt.Printf("%+v", release.Repository.Name)
+				fmt.Println("")
 				// Getting project struct
 				project, projectStatus := config.GetConfig(release.Repository.Name)
 				if !projectStatus {
