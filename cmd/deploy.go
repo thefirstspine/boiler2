@@ -111,6 +111,7 @@ var deployCmd = &cobra.Command{
 		// Stop old container
 		containerName := fmt.Sprintf("boilercontainer_%s", project.Name)
 		commands.DockerStop(containerName)
+		commands.DockerRm(containerName)
 
 		// Run the new container
 		port := ports.GetFirstFreePort(1024, 49151, []int{1024, 1433, 1521, 3306, 5432})
