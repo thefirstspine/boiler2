@@ -47,7 +47,7 @@ func DockerStop(containerName string) bool {
 func DockerRun(imageName string, containerName string, envVars []string, portForwarding string) bool {
 	envVarsStr := strings.Join(envVars[:], " -e ")
 	return TestCommand(
-		fmt.Sprintf("docker run %s --name %s -e %s -p %s -d", imageName, containerName, envVarsStr, portForwarding),
+		fmt.Sprintf("docker run --name %s -e %s -p %s -d %s", containerName, envVarsStr, portForwarding, imageName),
 	)
 }
 
