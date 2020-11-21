@@ -36,7 +36,8 @@ var serveCmd = &cobra.Command{
 	Short: "Serve for a webhook",
 	Long:  `Serve for a webhook`,
 	Run: func(cmd *cobra.Command, args []string) {
-		hook, _ := github.New(github.Options.Secret("MyGitHubSuperSecretSecrect...?"))
+		boilerConfig, _ := config.GetConfig()
+		hook, _ := github.New(github.Options.Secret(boilerConfig.GithubKey))
 
 		http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			payload, err := hook.Parse(r, github.ReleaseEvent)
@@ -53,7 +54,7 @@ var serveCmd = &cobra.Command{
 				color.Green("Release received:")
 				fmt.Printf("%+v", release)
 				// Getting project struct
-				project, projectStatus := config.GetConfig(release.Repository.Name)
+				project, projectStatus := config.GetProject(release.Repository.Name)
 				if !projectStatus {
 					color.Red("Cannot find app `%s`", release.Repository.Name)
 					return

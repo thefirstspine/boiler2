@@ -65,7 +65,7 @@ var deployCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get project
-		project, status := config.GetConfig(args[0])
+		project, status := config.GetProject(args[0])
 		if !status {
 			color.Red("Cannot find app `%s`", args[0])
 			panic("Something goes wrong in the deployment. Old container still up & running.")

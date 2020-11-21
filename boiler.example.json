@@ -1,4 +1,7 @@
 {
+  "config": {
+    "githubKey": ""
+  },
   "common": {
     "env": [
       "{environment key}={value}"
