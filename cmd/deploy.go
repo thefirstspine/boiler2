@@ -18,6 +18,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/fatih/color"
@@ -84,9 +85,10 @@ var deployCmd = &cobra.Command{
 		color.Green("Done")
 
 		// Get the app from the git repository
-		directory := fmt.Sprintf(directoryMask, project.Name, string(time.Now().UnixNano()))
+		timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
+		directory := fmt.Sprintf(directoryMask, project.Name, timestamp)
 		tagOfBranch, _ := cmd.Flags().GetString("tag_or_branch")
-		color.Cyan(fmt.Sprintf("\nGetting project from repo %s...", project.Repository))
+		color.Cyan(fmt.Sprintf("\nGetting project from repo %s in %s...", project.Repository, directory))
 		if !commands.GitClone(project.Repository, directory, tagOfBranch) {
 			color.Red("Failed to clone the repository.")
 			color.Red("Please check you have to rights to perform this action.")
