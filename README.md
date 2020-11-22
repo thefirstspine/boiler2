@@ -17,9 +17,7 @@ You need a server with git, docker, nginx and certbot installed. To install thes
 
 Also, your server needs to access your repositories in order to boil some apps.
 
-## Usage
-
-Deploy a project
+## Deployment
 
 ```
 ./boiler deploy [project] [options]
@@ -35,22 +33,40 @@ Example with Arena
 
 `./boiler deploy arena --tag_or_branch=1.0.0`
 
+## Service for Github Webhooks
+
+```
+./boiler serve
+```
+
+This will serve on the port 3000
+
 ## Configuring a project
 
 The configurations are stored inside in JSON located at `boiler.json`. Here’s an explaination of the content of the file:
 
 ```
 {
-  "projects": {
-    "{project name}": {
-      "forward": "{domain}::{container's port}",
+  "config": {
+    "githubKey": ""
+  },
+  "common": {
+    "env": [
+      "{environment key}={value}"
+    ]
+  },
+  "projects": [
+    {
+      "name": "{project name}",
+      "domain": "{domain}",
       "repository": "{repository - HTTPS or SSH}",
       "env": [
         "{environment key}={value}"
       ]
     }
-  }
+  ]
 }
+
 ```
 
 ## Complete example
@@ -58,13 +74,20 @@ The configurations are stored inside in JSON located at `boiler.json`. Here’s 
 ```
 # Write config
 echo '{
+  "config": {
+    "githubKey": ""
+  },
+  "common": {
+    "env": [
+      "PORT=8080",
+    ]
+  },
   "projects": [
     {
       "name": "rest",
       "domain": "rest.sandbox.thefirstspine.fr",
       "repository": "https://github.com/thefirstspine/rest.git",
       "env": [
-        "PORT=8080",
         "ARENA_URL=https://arena.thefirstspine.fr",
         "WEBSITE_URL=https://www.thefirstspine.fr"
       ]
