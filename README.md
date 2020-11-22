@@ -33,7 +33,7 @@ Example with Arena
 
 `./boiler deploy arena --tag_or_branch=1.0.0`
 
-## Service for Github Webhooks
+## Serving for Github Webhooks
 
 ```
 ./boiler serve
