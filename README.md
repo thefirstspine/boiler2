@@ -95,9 +95,9 @@ echo '{
   ]
 }' > boiler.json
 # Download from github
-wget https://github.com/thefirstspine/boiler2/releases/download/v-0.1.0/boiler2_v-0.1.0_linux_amd64.tar.gz boiler2_v-0.1.0_linux_amd64.tar.gz
+wget https://github.com/thefirstspine/boiler2/releases/download/v-1.0.0/boiler2_v-1.0.0_linux_amd64.tar.gz boiler2_v-1.0.0_linux_amd64.tar.gz
 # Untar release
-tar vxf boiler2_v-0.1.0_linux_amd64.tar.gz
+tar vxf boiler2_v-1.0.0_linux_amd64.tar.gz
 # Make it executable
 chmod +x boiler2
 # Execute file
