@@ -122,7 +122,7 @@ var deployCmd = &cobra.Command{
 			imageName,
 			containerName,
 			append(project.Env, common.Env...),
-			fmt.Sprintf("%d:%d", 8080, port),
+			fmt.Sprintf("%d:%d", port, 8080),
 		) {
 			color.Red("Failed to build the image.")
 			color.Red("Please ensure that the Docker daemon is running on this machine.")
