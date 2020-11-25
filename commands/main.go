@@ -58,7 +58,7 @@ func DockerRun(imageName string, containerName string, envVars []string, portFor
 	envVarsStr := strings.Join(envVars[:], "\" -e \"")
 	return TestCommand(
 		fmt.Sprintf("docker run --name %s -e \"%s\" -p %s -d %s", containerName, envVarsStr, portForwarding, imageName),
-		false)
+		true)
 }
 
 func Certbot(domain string) bool {
