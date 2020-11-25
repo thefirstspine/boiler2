@@ -3,6 +3,7 @@ package ports
 import (
 	"fmt"
 	"net"
+
 	"github.com/thefirstspine/boiler2/utils"
 )
 
@@ -16,8 +17,8 @@ func GetFirstFreePort(start int, end int, exclude []int) int {
 }
 
 func TestPortIsFree(port int) bool {
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
-  defer l.Close()
+	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	_ = ln.Close()
 
-  return err == nil
+	return err == nil
 }
