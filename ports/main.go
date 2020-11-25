@@ -18,7 +18,9 @@ func GetFirstFreePort(start int, end int, exclude []int) int {
 
 func TestPortIsFree(port int) bool {
 	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
-	_ = ln.Close()
+	if ln != nil {
+		_ = ln.Close()
+	}
 
 	return err == nil
 }
