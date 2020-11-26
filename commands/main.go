@@ -62,5 +62,5 @@ func DockerRun(imageName string, containerName string, envVars []string, portFor
 }
 
 func Certbot(domain string) bool {
-	return TestCommand(fmt.Sprintf("certbot --nginx --email teddy@coretizone.com -d %s --agree-tos --non-interactive", domain), true)
+	return TestCommand(fmt.Sprintf("certbot --nginx --email teddy@coretizone.com -d %s --agree-tos --non-interactive --redirect", domain), true)
 }
